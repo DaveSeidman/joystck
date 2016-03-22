@@ -11,3 +11,5 @@ var rooms = []; // maintain a list of rooms
 
 server.listen(80);
 app.use('/', express.static('html/'));
+
+console.log("server running on port 80");
