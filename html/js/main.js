@@ -24,14 +24,13 @@ var Joystck = (function() {
 
             console.log('welcome', data);
         })
-        .on('keypressReceived', function(data) {
-
-            console.log('key', data.key);
+        .on('keydown', function(data) {
             var arrow = $arrows[data.key];
             arrow.classList.add('active');
-            setTimeout(function() {
-                arrow.classList.remove('active');
-            }, 500);
+        })
+        .on('keyup', function(data) {
+            var arrow = $arrows[data.key];
+            arrow.classList.remove('active');
         })
 
     }
@@ -43,9 +42,20 @@ var Joystck = (function() {
         document.onkeydown = function(e) {
             e = e || window.event;
             var key = e.which || e.keyCode;
-            key-=37
-            if(key >= 0 && key <= 4) socket.emit('keypress', { key: key });
-            e.preventDefault();
+            key -= 37; // to align with array of arrows [0-3]
+            if(key >= 0 && key <= 4) {
+                socket.emit('keydown', { key: key });
+                e.preventDefault();
+            }
+        };
+        document.onkeyup = function(e) {
+            e = e || window.event;
+            var key = e.which || e.keyCode;
+            key -= 37; // to align with array of arrows [0-3]
+            if(key >= 0 && key <= 4) {
+                socket.emit('keyup', { key: key });
+                e.preventDefault();
+            }
         };
     }
 

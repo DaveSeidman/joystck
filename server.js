@@ -21,26 +21,51 @@ io.on('connection', function (socket) {
 
     socket.emit('welcome', { id : socket.id });
 
-    socket.on('keypress', function(data) {
+    socket.on('keydown', function(data) {
 
         // send the signal right back to client to confirm it's been received
         // when the claw machine is attached to pi, this event should also
         // return the updated position of the claw.
-        
-        socket.emit('keypressReceived', data);
+
+        socket.emit('keydown', data);
 
         switch(data.key) {
             case 37: // left
-                console.log('left');
+                console.log('lf pushed');
             break;
             case 38: // up
-                console.log('up');
+                console.log('up pushed');
             break;
             case 39: // right
-                console.log('right');
+                console.log('tr pushed');
             break;
             case 40: // down
-                console.log('down');
+                console.log('dn pushed');
+            break;
+        }
+
+    });
+
+    socket.on('keyup', function(data) {
+
+        // send the signal right back to client to confirm it's been received
+        // when the claw machine is attached to pi, this event should also
+        // return the updated position of the claw.
+
+        socket.emit('keyup', data);
+
+        switch(data.key) {
+            case 37: // left
+                console.log('lf released');
+            break;
+            case 38: // up
+                console.log('up released');
+            break;
+            case 39: // right
+                console.log('tr released');
+            break;
+            case 40: // down
+                console.log('dn released');
             break;
         }
 
