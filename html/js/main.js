@@ -6,6 +6,8 @@ var Joystck = (function() {
 
     var joystck = this;
     var socket;
+    var $joystick;
+    var $arrows;
 
     connect();
     listen();
@@ -17,45 +19,41 @@ var Joystck = (function() {
         socket.io.on('connect_error', function() {
             console.log('connection error');
         });
-
-        socket.on('welcome', function(data) {
+        socket
+        .on('welcome', function(data) {
 
             console.log('welcome', data);
+        })
+        .on('keypressReceived', function(data) {
 
-            console.log(socket);
-        });
+            console.log('key', data.key);
+            var arrow = $arrows[data.key];
+            arrow.classList.add('active');
+            setTimeout(function() {
+                arrow.classList.remove('active');
+            }, 500);
+        })
+
     }
 
     function listen() {
 
+        document.addEventListener("DOMContentLoaded", ready);
+
         document.onkeydown = function(e) {
             e = e || window.event;
-
-            socket.emit('keypress', { key: e.which || e.keyCode });
-
-            switch(e.which || e.keyCode) {
-                case 37: // left
-                    console.log('left');
-                break;
-
-                case 38: // up
-                    console.log('up');
-                break;
-
-                case 39: // right
-                    console.log('right');
-                break;
-
-                case 40: // down
-                    console.log('down');
-                break;
-
-                default: return; // exit this handler for other keys
-            }
+            var key = e.which || e.keyCode;
+            key-=37
+            if(key >= 0 && key <= 4) socket.emit('keypress', { key: key });
             e.preventDefault();
         };
     }
 
+    function ready() {
+
+        $joystick = document.getElementById('joystick');
+        $arrows = $joystick.querySelectorAll('a');
+    }
 
     return joystck;
 
