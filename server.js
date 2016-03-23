@@ -25,10 +25,10 @@ var offset = [
 
 var position = { x:0, y:0 };
 
-server.listen(80);
+server.listen(8888);
 app.use('/', express.static('html/'));
 
-console.log("server running on port 80");
+console.log("server running on port 8888");
 
 
 io.on('connection', function (socket) {

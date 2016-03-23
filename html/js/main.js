@@ -12,7 +12,7 @@ var Joystck = (function() {
     var host;
     var port = 80;
     var queIP = '192.168.108.22'; // keep this updated!
-    var rpiIP = '192.168.108.200';
+    var rpiIP = '192.168.108.15';
 
 
     document.addEventListener("DOMContentLoaded", ready);
@@ -42,19 +42,6 @@ var Joystck = (function() {
         $join.classList.add('hidden');
         socket.emit('joinQueue', socket.id);
     }
-
-    /*function welcome(data) {
-
-        console.log(data);
-        $title.innerHTML = "You are in the queue";
-        $queue.innerHTML = "";
-        for(var i = 0; i < data.length; i++) {
-
-            var $player = document.createElement("p");
-            $player.innerHTML = data[i] ? data[i].substring(2) : "--------------------";
-            $queue.appendChild($player);
-        }
-    }*/
 
     function updateQueue(data) {
 
@@ -99,7 +86,6 @@ var Joystck = (function() {
             console.log('welcome', data);
         })
         .on('keydown', function(data) {
-
             console.log(data.position);
             var arrow = $arrows[data.key];
             arrow.classList.add('active');
@@ -113,7 +99,7 @@ var Joystck = (function() {
 
     function listen() {
 
-        /*document.onkeydown = function(e) {
+        document.onkeydown = function(e) {
             e = e || window.event;
             var key = e.which || e.keyCode;
             key -= 37; // to align with array of arrows [0-3]
@@ -130,7 +116,7 @@ var Joystck = (function() {
                 socket.emit('keyup', { key: key });
                 e.preventDefault();
             }
-        };*/
+        };
 
         $join.addEventListener('mouseup', joinQueue);
     }
@@ -144,7 +130,7 @@ var Joystck = (function() {
         $join = document.getElementById('join');
 
         listen();
-        prepareQueue();
+        //prepareQueue();
     }
 
     return joystck;
