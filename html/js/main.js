@@ -25,6 +25,8 @@ var Joystck = (function() {
             console.log('welcome', data);
         })
         .on('keydown', function(data) {
+
+            console.log(data.position);
             var arrow = $arrows[data.key];
             arrow.classList.add('active');
         })
