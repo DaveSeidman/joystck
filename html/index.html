@@ -2,7 +2,8 @@
 <html>
 <head>
     <title>JoyStck</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,700' rel='stylesheet' type='text/css'>
+    <link href='css/style.css' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="js/vendor/socket.io.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
 </head>
@@ -12,7 +13,9 @@
 
         <h1 id="title">Loading...</h1>
 
-        <p>TODO: create a queue on a different website, then give users a chance to connect to this website by changing the src of an iFrame to it, and send the pi the IP address of the incoming user so that it can verify it for the current time slot, (this would block users from snooping the source of the iframe and coming back later).</p>
+        <button id="join">Join the Queue</button>
+
+        <h2 id="queue"></h2>
 
         <div id="joystick" class="hidden">
             <a id="lf">&#9664;</a>

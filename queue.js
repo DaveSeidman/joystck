@@ -27,13 +27,26 @@ io.on('connection', function (socket) {
 
     console.log(colors.green(">    connect:"), colors.white(socket.id));
 
-    sidQue.push(socket.id);
-    sktQue.push(socket);
-    //for(var sckt in io.sockets.sockets) {
-    //  console.log(sckt);
-    //}
+    socket.on('joinQueue', joinQueue);
+    //joinQueue(socket);
+});
 
-    socket.emit('welcome', sidQue);
+
+function joinQueue(data) {
+
+    console.log("join the queue", data)
+
+    sidQue.push({ id:data, status:'active' });
+    //sktQue.push(socket);
+    var socket;
+    for(var id in io.sockets.sockets) {
+      console.log(id.substring(2), data);
+      if(id.substring(2) == data) socket = io.sockets.sockets[id];
+    }
+
+    //will call update queueInstead
+    io.emit('updateQueue', sidQue);
+    //socket.emit('welcome', sidQue);
 
     socket.on('playing', playing);
 
@@ -43,28 +56,29 @@ io.on('connection', function (socket) {
 
         for(var i = 0; i < sidQue.length; i++) {
 
-            if(sidQue[i] == socket.id) delete sidQue[i];
+            //if(sidQue[i] == socket.id) delete sidQue[i];
+            if(sidQue[i].id == socket.id) sidQue[i].status = 'left';
         }
+
+        // sombody left, update queue;
+        io.emit('updateQueue', sidQue);
     });
 
-    console.log("is anybody playing?", nobodyPlaying);
     if(nobodyPlaying) nextPlayer();
-});
-
-
+}
 
 
 function nextPlayer() {
 
     console.log("nextPlayer");
-    current++;
 
-    if(current <= sidQue.length) {
+    if(current < sidQue.length - 1) {
 
-        if(sidQue[current]) {     // make sure connection is still around
+        current++;
 
-            io.to(sidQue[current]).emit('startturn', 'test');
-            nobodyPlaying = false;
+        if(sidQue[current].status == 'active') {     // make sure connection is still around
+
+            startTurn();
         }
         else {
 
@@ -75,8 +89,8 @@ function nextPlayer() {
 
     else {
 
-        console.log("at end of queue");
-        console.log("wait for a new player to connect, then start again");
+        console.log("at end of queue, wait for a new player to connect, then start again");
+        current--;
         nobodyPlaying = true;
     }
 }
@@ -90,10 +104,19 @@ function playing(data) {
 
 }
 
+function startTurn() {
+
+    console.log("starting turn");
+    sidQue[current].status = 'playing';
+    io.to(sidQue[current].id).emit('startturn', sidQue);
+    nobodyPlaying = false;
+}
+
 function endTurn() {
 
     console.log("ending turn");
-    io.to(sidQue[current]).emit('endturn', 'test');
+    sidQue[current].status = 'active'
+    io.to(sidQue[current].id).emit('endturn', sidQue);
     nobodyPlaying = true;
     nextPlayer();
 }
