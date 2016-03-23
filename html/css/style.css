@@ -50,3 +50,8 @@ h1, p {
     left:100%;
     top:50%;
 }
+
+.hidden {
+
+    display:none;
+}

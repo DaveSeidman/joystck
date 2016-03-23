@@ -1,27 +1,64 @@
 'use strict';
 
-console.log("we're up and running!");
-
 var Joystck = (function() {
 
     var joystck = this;
     var socket;
+    var $title;
     var $joystick;
     var $arrows;
     var host;
     var port = 80;
+    var queIP = '192.168.108.22'; // keep this updated!
+    var rpiIP = '192.168.108.200';
 
-    connect();
-    listen();
+
+    document.addEventListener("DOMContentLoaded", ready);
+
+
+    //queue();
+    //connect();
+    //listen();
+
+    function queue() {
+
+        //host = (window.location.host.indexOf('localhost') > -1) ? 'localhost' : queingIP;
+        host = queIP;
+        socket = io.connect(host + ':' + port, { transports: ['websocket'] });
+        socket.io.on('connect_error', function() { console.log('connection error'); });
+
+        socket.on('welcome', welcome);
+        socket.on('startturn', startturn);
+        socket.on('endturn', endturn);
+    }
+
+    function welcome(data) {
+
+        console.log(data);
+        $title.innerHTML = "you are in the queue";
+    }
+
+    function startturn(data) {
+
+        console.log("my turn!", data);
+        $title.innerHTML = "you are now controlling the pi";
+        socket.emit('playing');
+    }
+
+    function endturn(data) {
+        console.log("ending my turn!", data);
+        $title.innerHTML = "you have played";
+    }
+
 
     function connect() {
 
-        host = (window.location.host.indexOf('localhost') > -1) ? 'localhost' : '192.168.108.200';
+        //host = (window.location.host.indexOf('localhost') > -1) ? 'localhost' : '192.168.108.200';
+        host = rpiIP;
         socket = io.connect(host + ':' + port, { transports: ['websocket'] });
 
-        socket.io.on('connect_error', function() {
-            console.log('connection error');
-        });
+        socket.io.on('connect_error', function() { console.log('connection error'); });
+
         socket
         .on('welcome', function(data) {
 
@@ -41,8 +78,6 @@ var Joystck = (function() {
     }
 
     function listen() {
-
-        document.addEventListener("DOMContentLoaded", ready);
 
         document.onkeydown = function(e) {
             e = e || window.event;
@@ -66,8 +101,12 @@ var Joystck = (function() {
 
     function ready() {
 
+        $title = document.getElementById('title');
         $joystick = document.getElementById('joystick');
         $arrows = $joystick.querySelectorAll('a');
+
+        console.log("dom ready");
+        queue();
     }
 
     return joystck;
