@@ -15,6 +15,7 @@ p {
     border-radius:5px;
     width:220px;
     padding:10px 20px;
+    transition:transform .5s;
 }
 p.active {
     background-color: white;

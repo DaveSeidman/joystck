@@ -10,17 +10,11 @@ var Joystck = (function() {
     var $joystick;
     var $arrows;
     var host;
-    var port = 8888;
-    var queIP = '192.168.108.22'; // keep this updated!
-    var rpiIP = '108.54.246.220';
-
+    var queIP = '192.168.108.22:80'; // keep this updated!
+    var rpiIP = '108.54.246.220:8888';
+    var timer = 10;
 
     document.addEventListener("DOMContentLoaded", ready);
-
-
-    //queue();
-    //connect();
-    //listen();
 
 
 
@@ -28,30 +22,36 @@ var Joystck = (function() {
 
         //host = (window.location.host.indexOf('localhost') > -1) ? 'localhost' : queingIP;
         host = queIP;
-        socket = io.connect(host + ':' + port, { transports: ['websocket'] });
+        socket = io.connect(host, { transports: ['websocket'] });
         socket.io.on('connect_error', function() { console.log('connection error'); });
 
         //socket.on('welcome', welcome);
         socket.on('startturn', startturn);
         socket.on('endturn', endturn);
         socket.on('updateQueue', updateQueue);
+
     }
 
     function joinQueue() {
 
+        $title.innerHTML = "you are in the queue";
         $join.classList.add('hidden');
         socket.emit('joinQueue', socket.id);
     }
 
     function updateQueue(data) {
 
+        console.log("updating queue");
         $queue.innerHTML = '';
         for(var i = 0; i < data.length; i++) {
 
             var $player = document.createElement("p");
             $player.classList.add(data[i].status);
             $player.innerHTML =  data[i].id.substring(2);
-            if(socket.id == data[i].id.substring(2)) $player.classList.add('me');
+            if(socket.id == data[i].id) {
+
+                $player.classList.add('me');
+            }
             $queue.appendChild($player);
         }
     }
@@ -59,13 +59,23 @@ var Joystck = (function() {
 
     function startturn(data) {
 
+        $joystick.classList.remove('hidden');
         console.log("my turn!", data);
-        $title.innerHTML = "You are now controlling the pi";
+        updateTitle();
         socket.emit('playing');
         updateQueue(data);
     }
 
+    function updateTitle() {
+
+        timer--;
+        $title.innerHTML = "You are in control: " + timer;
+        if(timer) setTimeout(updateTitle, 1000);
+    }
+
     function endturn(data) {
+
+        $joystick.classList.add('hidden');
         console.log("ending my turn!", data);
         $title.innerHTML = "You have played";
         updateQueue(data);
@@ -76,7 +86,7 @@ var Joystck = (function() {
 
         //host = (window.location.host.indexOf('localhost') > -1) ? 'localhost' : '192.168.108.200';
         host = rpiIP;
-        socket = io.connect(host + ':' + port, { transports: ['websocket'] });
+        socket = io.connect(host, { transports: ['websocket'] });
 
         console.log("connecting to ", host + ':' + port);
 
@@ -101,7 +111,7 @@ var Joystck = (function() {
 
     function listen() {
 
-        document.onkeydown = function(e) {
+        /*document.onkeydown = function(e) {
             e = e || window.event;
             var key = e.which || e.keyCode;
             key -= 37; // to align with array of arrows [0-3]
@@ -125,10 +135,8 @@ var Joystck = (function() {
             $arrow.addEventListener('click', function(e) {
 
                 console.log(e.target.index);
-                //alert(e.target.id, );
-                //socket.emit('keydown', { })
             });
-        }
+        }*/
 
 
         $join.addEventListener('mouseup', joinQueue);
@@ -142,9 +150,9 @@ var Joystck = (function() {
         $arrows = $joystick.querySelectorAll('a');
         $join = document.getElementById('join');
 
-        connect();
+        //connect();
         listen();
-        //prepareQueue();
+        prepareQueue();
     }
 
     return joystck;
