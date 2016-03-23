@@ -24,6 +24,9 @@ io.on('connection', function (socket) {
     socket.on('keypress', function(data) {
 
         // send the signal right back to client to confirm it's been received
+        // when the claw machine is attached to pi, this event should also
+        // return the updated position of the claw.
+        
         socket.emit('keypressReceived', data);
 
         switch(data.key) {
