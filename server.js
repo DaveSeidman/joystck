@@ -7,10 +7,10 @@ var io = require('socket.io')(server);
 var colors = require('colors');
 var gpio = require("gpio");
 
-var gpio2 = gpio.export(2, { direction:'out', ready: function() { gpio2.set(0); } });
-var gpio3 = gpio.export(3, { direction:'out', ready: function() { gpio3.set(0); } });
-var gpio4 = gpio.export(4, { direction:'out', ready: function() { gpio4.set(0); } });
-var gpio14 = gpio.export(14, { direction:'out', ready: function() { gpio14.set(0); } });
+var gpio2  = gpio.export( 2, { direction:'out', interval:100, ready: function() {  gpio2.set(0); } });
+var gpio3  = gpio.export( 3, { direction:'out', interval:100, ready: function() {  gpio3.set(0); } });
+var gpio4  = gpio.export( 4, { direction:'out', interval:100, ready: function() {  gpio4.set(0); } });
+var gpio14 = gpio.export(14, { direction:'out', interval:100, ready: function() { gpio14.set(0); } });
 
 var gpioArray = [gpio2,gpio3,gpio4,gpio14];
 

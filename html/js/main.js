@@ -10,9 +10,9 @@ var Joystck = (function() {
     var $joystick;
     var $arrows;
     var host;
-    var port = 80;
+    var port = 8888;
     var queIP = '192.168.108.22'; // keep this updated!
-    var rpiIP = '192.168.108.15';
+    var rpiIP = '108.54.246.220';
 
 
     document.addEventListener("DOMContentLoaded", ready);
@@ -78,6 +78,8 @@ var Joystck = (function() {
         host = rpiIP;
         socket = io.connect(host + ':' + port, { transports: ['websocket'] });
 
+        console.log("connecting to ", host + ':' + port);
+
         socket.io.on('connect_error', function() { console.log('connection error'); });
 
         socket
@@ -93,7 +95,7 @@ var Joystck = (function() {
         .on('keyup', function(data) {
             var arrow = $arrows[data.key];
             arrow.classList.remove('active');
-        })
+        });
 
     }
 
@@ -118,6 +120,17 @@ var Joystck = (function() {
             }
         };
 
+        for(var i = 0; i < $arrows.length; i++) {
+            var $arrow = $arrows[i];
+            $arrow.addEventListener('click', function(e) {
+
+                console.log(e.target.index);
+                //alert(e.target.id, );
+                //socket.emit('keydown', { })
+            });
+        }
+
+
         $join.addEventListener('mouseup', joinQueue);
     }
 
@@ -129,6 +142,7 @@ var Joystck = (function() {
         $arrows = $joystick.querySelectorAll('a');
         $join = document.getElementById('join');
 
+        connect();
         listen();
         //prepareQueue();
     }
