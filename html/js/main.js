@@ -8,13 +8,16 @@ var Joystck = (function() {
     var socket;
     var $joystick;
     var $arrows;
+    var host;
+    var port = 80;
 
     connect();
     listen();
 
     function connect() {
 
-        socket = io.connect('localhost' + ':80', { transports: ['websocket'] });
+        host = (window.location.host.indexOf('localhost') > -1) ? 'localhost' : '192.168.108.200';
+        socket = io.connect(host + ':' + port, { transports: ['websocket'] });
 
         socket.io.on('connect_error', function() {
             console.log('connection error');
