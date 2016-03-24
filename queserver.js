@@ -32,7 +32,6 @@ function setupConnection() {
         console.log(colors.green(">    connect:"), colors.white(socket.id));
 
         socket.emit('welcome');
-        socket.emit('updateQueue', sockets);
         socket.on('joinQueue', joinQueue);
         socket.on('disconnect', function() {
 
@@ -51,24 +50,18 @@ function setupConnection() {
 
 function joinQueue(data) {
 
-    console.log("join the queue", data)
-
     sockets.push({ id:data, status:'active' });
-    //sktQue.push(socket);
-    var socket;
-    for(var id in io.sockets.sockets) {
-      if(id.substring(2) == data) socket = io.sockets.sockets[id];
-    }
-
     io.emit('updateQueue', sockets);
 
-    io.to(socket).emit('addedToQueue'); // not listening for this yet but might be handy if we're checking for repeat users on the server
-    //socket.emit('welcome', sockets);
+    var socket;
+    for(var id in io.sockets.sockets) {
+        if(id.substring(2) == data) socket = io.sockets.sockets[id];
+    }
+    io.to(socket.id).emit('addedToQueue');
+
 
     socket.on('playing', playing);
 
-
-    console.log("occupied", occupied);
     if(!occupied) nextPlayer();
 }
 
@@ -79,13 +72,10 @@ function nextPlayer() {
 
     current++;
 
-    console.log(current, sockets.length);
-
     if(current <= sockets.length) {
 
         if(sockets[current] && sockets[current].status == 'active') {     // make sure connection is still around
 
-            //occupied = true;
             startTurn();
         }
         else {
@@ -98,7 +88,6 @@ function nextPlayer() {
     else {
 
         console.log("at end of queue, wait for a new player to connect, then start again");
-        //current--;
         occupied = false;
     }
 }

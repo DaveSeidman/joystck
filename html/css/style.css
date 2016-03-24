@@ -1,4 +1,4 @@
-html, body { width:100%; height:100%; margin:0; padding:0; overflow:hidden; }
+html, body { width:100%; height:100%; margin:0; padding:0; }
 * { font-family: 'Source Code Pro', sans-serif; }
 
 h1 { font-size:30px; }
@@ -15,7 +15,11 @@ p {
     border-radius:5px;
     width:220px;
     padding:10px 20px;
+    transform:scale(1);
     transition:transform .5s;
+}
+p.playing {
+    transform:scale(1.25) !important;
 }
 p.active {
     background-color: white;
@@ -25,9 +29,7 @@ p.me {
     background-color: black;
     color:white;
 }
-p.playing {
-    transform:scale(1.25);
-}
+
 p.playing:before, p.playing:after {
     content:' * ';
 }
@@ -49,8 +51,11 @@ p.left {
     font-size:15px;
     font-weight:500;
     cursor:pointer;
-    transition:opacity: .5s;
+    opacity:1;
+    transition:opacity .5s;
 }
+
+
 #joystick {
 
     width:300px;
@@ -61,6 +66,8 @@ p.left {
     border-radius:50%;
     margin-left:-150px;
     margin-top:50px;
+    opacity:1;
+    transition:opacity .5s;
 }
 
 #joystick a {
@@ -100,6 +107,6 @@ p.left {
 
 .hidden {
 
-    opacity:0;
+    opacity:0 !important;
     pointer-events: none;
 }
