@@ -10,18 +10,20 @@ var Joystck = (function() {
     var $joystick;
     var $arrows;
     var host;
-    var queIP = '192.168.108.220:8888'; // keep this updated!
-    var rpiIP = '108.54.246.220:8888';
+    var queInternalIP = 'localhost:80';      //
+    var queExternalIP = '108.54.246.220:80';   //
+    var rpiExternalIP = '108.54.246.220:8888'; // this only works from outside our network
+    var rpiInternalIP = '192.160.108.15:8888'; // this only works from inside out network
     var timer = 10;
 
     document.addEventListener("DOMContentLoaded", ready);
 
 
-
     function connectoToQueue() {
 
         console.log("connecting to queue server");
-        host = queIP;
+        host = window.location.hostname.indexOf('192.168') < 0 ? queExternalIP : queInternalIP
+        console.log(host);
         socket = io.connect(host, { transports: ['websocket'] });
         socket.io.on('connect_error', function() { console.log('connection error'); });
 
@@ -30,6 +32,11 @@ var Joystck = (function() {
         socket.on('endturn', endturn);
         socket.on('updateQueue', updateQueue);
 
+    }
+
+    function welcome(data) {
+
+        console.log('welcome', data);
     }
 
     function joinQueue() {
@@ -85,7 +92,7 @@ var Joystck = (function() {
     function connectToRpi() {
 
         console.log("connecting to rpi server");
-        host = rpiIP;
+        host = rpiExternalIP;
         socket = io.connect(host, { transports: ['websocket'] });
 
         socket.io.on('connect_error', function() { console.log('connection error'); });
@@ -153,8 +160,15 @@ var Joystck = (function() {
         $join = document.getElementById('join');
 
         //connect();
-        if(window.location.hash == '#bypass') connectToRpi();
-        else connectoToQueue();
+        if(window.location.hash == '#bypass') {
+
+            console.log("you are bypassing the queue and should be connected to the pi");
+            connectToRpi();
+        }
+        else {
+            console.log("you are entering the site normally");
+            connectoToQueue();
+        }
     }
 
     return joystck;

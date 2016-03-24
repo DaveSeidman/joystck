@@ -1,3 +1,5 @@
+// directly control the pi over port 8888
+
 'use strict';
 
 var app = require('express')();
@@ -13,14 +15,8 @@ var gpioArray = [];
 
 var rooms = []; // maintain a list of rooms
 var dir = ['◀','▲','▶','▼'];
-var offset = [
-    { x:-1, y:0 },
-    { x:0, y:-1 },
-    { x:1, y:0 },
-    { x:0, y:1 }
-];
-
-var position = { x:0, y:0 };
+var clawMovement = [ { x:-1, y:0 }, { x:0, y:-1 }, { x:1, y:0 }, { x:0, y:1 } ];
+var clawPosition = { x:0, y:0 };
 
 setupServer();
 setupGPIO();
@@ -53,11 +49,11 @@ function setupConnection() {
 
             // send the signal right back to client to confirm it's been received
             // when the claw machine is attached to pi, this event should also
-            // return the updated position of the claw.
+            // return the updated clawPosition of the claw.
 
-            position.x += offset[data.key].x;
-            position.y += offset[data.key].y;
-            data.position = position;
+            clawPosition.x += clawMovement[data.key].x;
+            clawPosition.y += clawMovement[data.key].y;
+            data.position = clawPosition;
 
 
             gpioArray[data.key].set(1);
@@ -65,19 +61,19 @@ function setupConnection() {
             socket.emit('keydown', data);
             console.log(dir[data.key], "◼");
 
-
         });
 
         socket.on('keyup', function(data) {
 
             // send the signal right back to client to confirm it's been received
             // when the claw machine is attached to pi, this event should also
-            // return the updated position of the claw.
+            // return the updated clawPosition of the claw.
 
             gpioArray[data.key].set(0);
 
             socket.emit('keyup', data);
             console.log(dir[data.key], "◻");
+            
         });
 
     });

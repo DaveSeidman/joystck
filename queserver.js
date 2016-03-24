@@ -9,44 +9,44 @@ var io = require('socket.io')(server);
 var colors = require('colors');
 
 var sockets = [];    // just the id's
-var clientArray = []; // anyone on the site
-var playerQueue = []; // only people in queue
-//var sktQue = [];    // actual socket refs
 var current = -1;
 
 var occupied = false;
 
-var timeslots = [];
 
-server.listen(80);
-app.use('/', express.static('html/'));
-
+setupServer();
+setupConnection();
 
 
-console.log("server running on port 80");
+function setupServer() {
 
-io.on('connection', function (socket) {
+    server.listen(80);
+    app.use('/', express.static('html/'));
+    console.log("server running on port 80");
+}
 
-    console.log(colors.green(">    connect:"), colors.white(socket.id));
+function setupConnection() {
 
-    socket.emit('updateQueue', sockets);
-    socket.on('joinQueue', joinQueue);
-    socket.on('disconnect', function() {
+    io.on('connection', function (socket) {
 
-        console.log(colors.red("> disconnect:"), colors.white(socket.id));
+        console.log(colors.green(">    connect:"), colors.white(socket.id));
 
-        for(var i = 0; i < sockets.length; i++) {
+        socket.emit('updateQueue', sockets);
+        socket.on('joinQueue', joinQueue);
+        socket.on('disconnect', function() {
 
-            if(sockets[i].id == socket.id.substring(2)) sockets[i].status = 'left';
-        }
+            console.log(colors.red("> disconnect:"), colors.white(socket.id));
 
-        // sombody left, update queue;
-        io.emit('updateQueue', sockets);
+            for(var i = 0; i < sockets.length; i++) {
+
+                if(sockets[i].id == socket.id.substring(2)) sockets[i].status = 'left';
+            }
+
+            // sombody left, update queue;
+            io.emit('updateQueue', sockets);
+        });
     });
-
-    //joinQueue(socket);
-});
-
+}
 
 function joinQueue(data) {
 
