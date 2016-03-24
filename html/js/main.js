@@ -10,8 +10,8 @@ var Joystck = (function() {
     var $joystick;
     var $arrows;
     var host;
-    var queInternalIP = 'localhost:80';      //
-    var queExternalIP = '108.54.246.220:80';   //
+    var queInternalIP = 'localhost:80';        // queue server running locally
+    var queExternalIP = '172.31.12.223:80';    // queue server running on aws
     var rpiExternalIP = '108.54.246.220:8888'; // this only works from outside our network
     var rpiInternalIP = '192.160.108.15:8888'; // this only works from inside out network
     var timer = 10;
@@ -22,7 +22,7 @@ var Joystck = (function() {
     function connectoToQueue() {
 
         console.log("connecting to queue server");
-        host = window.location.hostname.indexOf('192.168') < 0 ? queExternalIP : queInternalIP
+        host = (window.location.hostname.indexOf('192.168') + 1 || window.location.hostname.indexOf('localhost') + 1) ? queInternalIP : queExternalIP;
         console.log(host);
         socket = io.connect(host, { transports: ['websocket'] });
         socket.io.on('connect_error', function() { console.log('connection error'); });
