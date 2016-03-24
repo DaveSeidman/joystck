@@ -10,7 +10,7 @@ var Joystck = (function() {
     var $joystick;
     var $arrows;
     var host;
-    var queIP = '192.168.108.22:80'; // keep this updated!
+    var queIP = '192.168.108.220:8888'; // keep this updated!
     var rpiIP = '108.54.246.220:8888';
     var timer = 10;
 
@@ -18,14 +18,14 @@ var Joystck = (function() {
 
 
 
-    function prepareQueue() {
+    function connectoToQueue() {
 
-        //host = (window.location.host.indexOf('localhost') > -1) ? 'localhost' : queingIP;
+        console.log("connecting to queue server");
         host = queIP;
         socket = io.connect(host, { transports: ['websocket'] });
         socket.io.on('connect_error', function() { console.log('connection error'); });
 
-        //socket.on('welcome', welcome);
+        socket.on('welcome', welcome);
         socket.on('startturn', startturn);
         socket.on('endturn', endturn);
         socket.on('updateQueue', updateQueue);
@@ -82,13 +82,11 @@ var Joystck = (function() {
     }
 
 
-    function connect() {
+    function connectToRpi() {
 
-        //host = (window.location.host.indexOf('localhost') > -1) ? 'localhost' : '192.168.108.200';
+        console.log("connecting to rpi server");
         host = rpiIP;
         socket = io.connect(host, { transports: ['websocket'] });
-
-        console.log("connecting to ", host + ':' + port);
 
         socket.io.on('connect_error', function() { console.log('connection error'); });
 
@@ -96,6 +94,8 @@ var Joystck = (function() {
         .on('welcome', function(data) {
 
             console.log('welcome', data);
+            $joystick.classList.remove('hidden');
+            rpiListen();
         })
         .on('keydown', function(data) {
             console.log(data.position);
@@ -109,9 +109,9 @@ var Joystck = (function() {
 
     }
 
-    function listen() {
+    function rpiListen() {
 
-        /*document.onkeydown = function(e) {
+        document.onkeydown = function(e) {
             e = e || window.event;
             var key = e.which || e.keyCode;
             key -= 37; // to align with array of arrows [0-3]
@@ -136,8 +136,10 @@ var Joystck = (function() {
 
                 console.log(e.target.index);
             });
-        }*/
+        }
+    }
 
+    function listen() {
 
         $join.addEventListener('mouseup', joinQueue);
     }
@@ -151,8 +153,8 @@ var Joystck = (function() {
         $join = document.getElementById('join');
 
         //connect();
-        listen();
-        prepareQueue();
+        if(window.location.hash == '#bypass') connectToRpi();
+        else connectoToQueue();
     }
 
     return joystck;
