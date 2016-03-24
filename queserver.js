@@ -31,6 +31,7 @@ function setupConnection() {
 
         console.log(colors.green(">    connect:"), colors.white(socket.id));
 
+        socket.emit('welcome');
         socket.emit('updateQueue', sockets);
         socket.on('joinQueue', joinQueue);
         socket.on('disconnect', function() {

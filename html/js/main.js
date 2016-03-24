@@ -13,8 +13,8 @@ var Joystck = (function() {
     var host;
     var queInternalIP = 'localhost:8080';        // queue server running locally
     var queExternalIP = '54.215.238.219:8080';    // queue server running on aws
-    var rpiExternalIP = '108.54.246.220:8888'; // this only works from outside our network
     var rpiInternalIP = '192.160.108.15:8888'; // this only works from inside out network
+    var rpiExternalIP = '108.54.246.220:8888'; // this only works from outside our network
     var timer = 10;
 
     document.addEventListener("DOMContentLoaded", ready);
@@ -35,9 +35,12 @@ var Joystck = (function() {
         $join.addEventListener('mouseup', joinQueue);
     }
 
-    function welcome(data) {
+    function welcome() {
 
-        console.log('welcome', data);
+        console.log('welcome');
+        $title.innerHTML = $title.getAttribute('original');
+        $queue.innerHTML = $queue.getAttribute('original');
+        $join.classList.remove('hidden');
     }
 
     function joinQueue() {
@@ -70,6 +73,7 @@ var Joystck = (function() {
         $joystick.classList.remove('hidden');
         console.log("my turn!", data);
         updateTitle();
+        connectToRpi();
         queSocket.emit('playing');
     }
 
@@ -91,12 +95,12 @@ var Joystck = (function() {
     function connectToRpi() {
 
         console.log("connecting to rpi server");
-        host = rpiExternalIP;
+        host = (window.location.hostname.indexOf('192.168') + 1 || window.location.hostname.indexOf('localhost') + 1) ? rpiInternalIP : rpiExternalIP;
         rpiSocket = io.connect(host, { transports: ['websocket'] });
 
-        rpiSsocket.io.on('connect_error', function() { console.log('connection error'); });
+        rpiSocket.io.on('connect_error', function() { console.log('connection error'); });
 
-        socket
+        rpiSocket
         .on('welcome', function(data) {
 
             console.log('welcome', data);
@@ -154,6 +158,10 @@ var Joystck = (function() {
         $joystick = document.getElementById('joystick');
         $arrows = $joystick.querySelectorAll('a');
         $join = document.getElementById('join');
+
+        $title.setAttribute('original', $title.innerHTML);
+        $queue.setAttribute('original', $queue.innerHTML);
+
 
         //connect();
         if(window.location.hash == '#bypass') {
