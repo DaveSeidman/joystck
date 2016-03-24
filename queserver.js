@@ -20,9 +20,9 @@ setupConnection();
 
 function setupServer() {
 
-    server.listen(80);
+    server.listen(8080);
     app.use('/', express.static('html/'));
-    console.log("server running on port 80");
+    console.log("server running on port 8080");
 }
 
 function setupConnection() {
