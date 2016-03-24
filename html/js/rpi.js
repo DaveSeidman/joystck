@@ -13,6 +13,7 @@ var RPI = (function() {
     rpi.connect = function() {
 
         var host = (window.location.hostname.indexOf('192.168') + 1 || window.location.hostname.indexOf('localhost') + 1) ? rpiInternalIP : rpiExternalIP;
+        console.log("looking for the pi here", host);
         rpi.socket = socket = io.connect(host, { transports: ['websocket'] });
 
         socket.io.on('connect_error', function() { console.log('connection error'); });

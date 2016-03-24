@@ -84,7 +84,6 @@ var Claw = (function() {
 
     function updateQueue() {
 
-        //var sockets = data.detail;
         $queue.innerHTML = '';
         for(var i = 0; i < que.socketList.length; i++) {
 
