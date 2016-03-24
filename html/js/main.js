@@ -10,8 +10,8 @@ var Joystck = (function() {
     var $joystick;
     var $arrows;
     var host;
-    var queInternalIP = 'localhost:80';        // queue server running locally
-    var queExternalIP = '172.31.12.223:80';    // queue server running on aws
+    var queInternalIP = 'localhost:8080';        // queue server running locally
+    var queExternalIP = '54.215.238.219:8080';    // queue server running on aws
     var rpiExternalIP = '108.54.246.220:8888'; // this only works from outside our network
     var rpiInternalIP = '192.160.108.15:8888'; // this only works from inside out network
     var timer = 10;
