@@ -49,6 +49,7 @@ p.left {
     font-size:15px;
     font-weight:500;
     cursor:pointer;
+    transition:opacity: .5s;
 }
 #joystick {
 
@@ -99,5 +100,5 @@ p.left {
 
 .hidden {
 
-    display:none;
+    opacity:0;
 }

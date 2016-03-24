@@ -105,10 +105,8 @@ function nextPlayer() {
 
 function playing(data) {
 
-    console.log("okay, client is playing");
-
+    console.log("client is playing");
     setTimeout(endTurn, 10000);
-
 }
 
 function startTurn() {

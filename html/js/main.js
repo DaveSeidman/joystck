@@ -3,7 +3,8 @@
 var Joystck = (function() {
 
     var joystck = this;
-    var socket;
+    var rpiSocket;
+    var queSocket;
     var $title;
     var $queue;
     var $join;
@@ -23,15 +24,15 @@ var Joystck = (function() {
 
         console.log("connecting to queue server");
         host = (window.location.hostname.indexOf('192.168') + 1 || window.location.hostname.indexOf('localhost') + 1) ? queInternalIP : queExternalIP;
-        console.log(host);
-        socket = io.connect(host, { transports: ['websocket'] });
-        socket.io.on('connect_error', function() { console.log('connection error'); });
+        queSocket = io.connect(host, { transports: ['websocket'] });
+        queSocket.io.on('connect_error', function() { console.log('connection error'); });
 
-        socket.on('welcome', welcome);
-        socket.on('startturn', startturn);
-        socket.on('endturn', endturn);
-        socket.on('updateQueue', updateQueue);
+        queSocket.on('welcome', welcome);
+        queSocket.on('startturn', startturn);
+        queSocket.on('endturn', endturn);
+        queSocket.on('updateQueue', updateQueue);
 
+        $join.addEventListener('mouseup', joinQueue);
     }
 
     function welcome(data) {
@@ -43,7 +44,7 @@ var Joystck = (function() {
 
         $title.innerHTML = "you are in the queue";
         $join.classList.add('hidden');
-        socket.emit('joinQueue', socket.id);
+        queSocket.emit('joinQueue', queSocket.id);
     }
 
     function updateQueue(data) {
@@ -55,7 +56,7 @@ var Joystck = (function() {
             var $player = document.createElement("p");
             $player.classList.add(data[i].status);
             $player.innerHTML =  data[i].id.substring(2);
-            if(socket.id == data[i].id) {
+            if(queSocket.id == data[i].id) {
 
                 $player.classList.add('me');
             }
@@ -69,8 +70,7 @@ var Joystck = (function() {
         $joystick.classList.remove('hidden');
         console.log("my turn!", data);
         updateTitle();
-        socket.emit('playing');
-        updateQueue(data);
+        queSocket.emit('playing');
     }
 
     function updateTitle() {
@@ -85,7 +85,6 @@ var Joystck = (function() {
         $joystick.classList.add('hidden');
         console.log("ending my turn!", data);
         $title.innerHTML = "You have played";
-        updateQueue(data);
     }
 
 
@@ -93,16 +92,16 @@ var Joystck = (function() {
 
         console.log("connecting to rpi server");
         host = rpiExternalIP;
-        socket = io.connect(host, { transports: ['websocket'] });
+        rpiSocket = io.connect(host, { transports: ['websocket'] });
 
-        socket.io.on('connect_error', function() { console.log('connection error'); });
+        rpiSsocket.io.on('connect_error', function() { console.log('connection error'); });
 
         socket
         .on('welcome', function(data) {
 
             console.log('welcome', data);
             $joystick.classList.remove('hidden');
-            rpiListen();
+            rpiEvents();
         })
         .on('keydown', function(data) {
             console.log(data.position);
@@ -116,14 +115,14 @@ var Joystck = (function() {
 
     }
 
-    function rpiListen() {
+    function rpiEvents() {
 
         document.onkeydown = function(e) {
             e = e || window.event;
             var key = e.which || e.keyCode;
             key -= 37; // to align with array of arrows [0-3]
             if(key >= 0 && key <= 4) {
-                socket.emit('keydown', { key: key });
+                rpiSocket.emit('keydown', { key: key });
                 e.preventDefault();
             }
         };
@@ -132,7 +131,7 @@ var Joystck = (function() {
             var key = e.which || e.keyCode;
             key -= 37; // to align with array of arrows [0-3]
             if(key >= 0 && key <= 4) {
-                socket.emit('keyup', { key: key });
+                rpiSocket.emit('keyup', { key: key });
                 e.preventDefault();
             }
         };
@@ -142,14 +141,11 @@ var Joystck = (function() {
             $arrow.addEventListener('click', function(e) {
 
                 console.log(e.target.index);
+                // to do: emit to rpi here
             });
         }
     }
 
-    function listen() {
-
-        $join.addEventListener('mouseup', joinQueue);
-    }
 
     function ready() {
 
