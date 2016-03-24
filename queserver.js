@@ -43,7 +43,7 @@ function setupConnection() {
             }
 
             // sombody left, update queue;
-            io.emit('updateQueue', sockets);
+            io.emit('updateQueue', { sockets : sockets, current : current });
         });
     });
 }
@@ -51,7 +51,7 @@ function setupConnection() {
 function joinQueue(data) {
 
     sockets.push({ id:data, status:'active' });
-    io.emit('updateQueue', sockets);
+    io.emit('updateQueue', { sockets : sockets, current : current} );
 
     var socket;
     for(var id in io.sockets.sockets) {
@@ -104,7 +104,7 @@ function startTurn() {
     console.log("starting turn", sockets[current]);
     sockets[current].status = 'playing';
     io.to('/#' + sockets[current].id).emit('startturn', sockets);
-    io.emit('updateQueue', sockets);
+    io.emit('updateQueue', { sockets : sockets, current : current });
     occupied = true;
 }
 
@@ -113,7 +113,7 @@ function endTurn() {
     console.log("ending turn");
     sockets[current].status = 'active'
     io.to('/#' + sockets[current].id).emit('endturn', sockets);
-    io.emit('updateQueue', sockets);
+    io.emit('updateQueue', { sockets : sockets, current : current });
     occupied = false;
     if(current < sockets.length - 1) nextPlayer();
 }

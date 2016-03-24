@@ -56,6 +56,7 @@ var Claw = (function() {
     function queAdded() {
 
         $join.classList.add('hidden');
+
     }
 
     function startTurn() {
@@ -77,21 +78,24 @@ var Claw = (function() {
     function endTurn() {
 
         $joystick.classList.add('hidden');
-        $title.innerHTML = "You have played";
+        //$title.innerHTML = "You have played";
         rpi.socket.emit('disconnectMe');
     }
 
-    function updateQueue(data) {
+    function updateQueue() {
 
-        var sockets = data.detail;
+        //var sockets = data.detail;
         $queue.innerHTML = '';
-        for(var i = 0; i < sockets.length; i++) {
+        for(var i = 0; i < que.socketList.length; i++) {
 
             var $player = document.createElement("p");
-            $player.classList.add(sockets[i].status);
-            $player.innerHTML =  sockets[i].id.substring(2);
-            if(que.socket.id == sockets[i].id) {
+            $player.classList.add(que.socketList[i].status);
+            $player.innerHTML =  que.socketList[i].id.substring(2);
+            if(que.socket.id == que.socketList[i].id) {
 
+                if(i - que.current > 0) $title.innerHTML = "You are #" + (i - que.current) +  " in line";
+                else if(i == que.current) $title.innerHTML = "You are in control";
+                else $title.innerHTML = "You have played";
                 $player.classList.add('me');
             }
             $queue.appendChild($player);

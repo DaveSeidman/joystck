@@ -7,6 +7,8 @@ var QUE = (function() {
 
     var que = {};
     var socket;
+    var socketList;
+    var current;
     var queInternalIP = 'localhost:8080';        // queue server running locally
     var queExternalIP = '54.215.238.219:8080';    // queue server running on aws
 
@@ -40,7 +42,10 @@ var QUE = (function() {
 
     function updateQueue(data) {
 
-        dispatchEvent(new CustomEvent('updateQueue', { "detail":data }));
+        que.socketList = socketList = data.sockets;
+        que.current = current = data.current;
+        //dispatchEvent(new CustomEvent('updateQueue', { "detail":data }));
+        dispatchEvent(new Event('updateQueue'));
     }
 
     function startturn(data) {
